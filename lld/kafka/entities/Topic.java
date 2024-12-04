@@ -2,11 +2,12 @@ package lld.kafka.entities;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 import lld.kafka.configs.KafkaConfig;
 import lld.kafka.consumer.AbstractConsumer;
@@ -19,12 +20,14 @@ public class Topic {
     private String topicName;
     private List<AbstractConsumer> consumers;
     private List<AbstractProducer> producers;
+    private final ReentrantLock consumerLock = new ReentrantLock();
+    private final ReentrantLock producerLock = new ReentrantLock();
     public Topic(String name){
         this.topicName =  name;
-        queue = new LinkedList<>();
+        queue = new ConcurrentLinkedQueue<>();
         read = new PriorityQueue<>((a,b)-> a.getReadTime().isBefore(b.getReadTime()) ? 1:0);
-        consumers = new ArrayList<>();
-        producers = new ArrayList<>();
+        consumers = new CopyOnWriteArrayList<>();
+        producers = new CopyOnWriteArrayList<>();
     }
     public String getTopicName(){
         return this.topicName;
@@ -36,13 +39,13 @@ public class Topic {
         //logic to remove entry after the threshold is reached
     }
     // once the message are read they are moved to persisted queue where they can be removed after some time of persistence
-    public Message read(){
+    public synchronized Message read(){
         Message m = null;
         if(queue.isEmpty()) return null;
         queue.peek().incrementReadCount();
 
         if(queue.peek().getReadCount()==consumers.size()){
-            m = queue.remove();
+            m = queue.remove();// Removes the message only when all consumers have read it
         }
         else{
             m = queue.peek();
@@ -52,22 +55,44 @@ public class Topic {
         return m;
     }
 
+    /*FINE GRAINED CONTROL 
+     * Locking for Fine-Grained Control If certain operations require stricter control 
+     * (e.g., adding/removing consumers or producers), use ReentrantLock for fine-grained synchronization 
+     * instead of synchronizing the entire method.
+    */
+
     public void addConsumer(AbstractConsumer c){
-        this.consumers.add(c);
+        consumerLock.lock();
+        try{
+            this.consumers.add(c);
+        }
+        finally{
+            consumerLock.unlock();
+        }
     }
     public void addProducer(AbstractProducer producer) {
-        this.producers.add(producer);
+        producerLock.lock();
+        try{
+            this.producers.add(producer);
+        }
+        finally{
+            producerLock.unlock();
+        }
     }
 
-    public void add(String message){
+    public synchronized void add(String message){
         Message m = new Message(UniqueKeyGeneratorUtility.getUniqueKey(KafkaConfig.KEY_LEN), message);
         queue.add(m);
         //once new message is added consumers should be notified
         notifyConsumers();
     }
+    /*THREAD SAFE NOTIFICATION
+     * notifyConsumers() might trigger multiple threads to consume messages simultaneously.
+     *  Make sure this method does not cause deadlocks or race conditions
+    */
     public void notifyConsumers(){
         for(AbstractConsumer consumer : consumers){
-            consumer.update(this.getTopicName());
+            new Thread(()-> consumer.update(this.getTopicName())).start();;
         }
     }
 }

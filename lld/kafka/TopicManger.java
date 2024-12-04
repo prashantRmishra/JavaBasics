@@ -20,8 +20,11 @@ public class TopicManger {
 
     //producer part
     public void publishMessage(String topicName,String message){
-
-        this.topics.get(topicName).add(message);
+        Topic topic = this.topics.get(topicName);
+        if(topic!=null){
+            topic.add(message);
+        }
+        
     }
 
     //consumer part

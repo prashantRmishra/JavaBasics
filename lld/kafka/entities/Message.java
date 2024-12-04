@@ -1,13 +1,14 @@
 package lld.kafka.entities;
 
 import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Message{
     private String key;
     private String message;
     private boolean isRead = false;
     private LocalDate readTime;
-    private int readCount =0;
+    private AtomicInteger readCount = new AtomicInteger(0);
     @Override
     public String toString() {
         return "Message [key=" + key + ", message=" + message + ", readTime=" + readTime + "]";
@@ -23,10 +24,10 @@ public class Message{
         return this.key;
     }
     public void incrementReadCount(){
-        readCount++;
+        readCount.incrementAndGet();
     }
     public int getReadCount(){
-        return this.readCount;
+        return readCount.get();
     }
     public void read(){
         this.isRead = true;
