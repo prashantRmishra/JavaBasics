@@ -18,6 +18,7 @@
   - [Locking Strategies and Deadlocks](#locking-strategies-and-deadlocks)
   - [ReentrantLock](#reentrantlock)
   - [ReentrantReadWriteLock](#reentrantreadwritelock)
+  - [Semaphore](#semaphore)
 
 
 
@@ -445,7 +446,13 @@ This way we make the program more snappy and working without having some threads
   - User the right tool for the job
   - Measure and validate the assumptions
 
-
+## Semaphore
+- Acts as permit issuing authority
+- Can restrict the number of users per critical section/resource
+- Difference between Lock and Semaphore
+  - Any thread can release a semaphore(no ownership)
+- Inter-thread communication for producer consumer using semaphore
+- [Read this example of empty semaphore](semaphore/readme.md)
 
 
 **Udemy course reference**
