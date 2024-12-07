@@ -15,6 +15,7 @@
   - [Race Condition](#race-condition)
     - [Race Condition solution](#race-condition-solution)
   - [Data race](#data-race)
+  - [Locking Strategies and Deadlocks](#locking-strategies-and-deadlocks)
 
 
 
@@ -362,6 +363,26 @@ We already discussed the race condition, this occurs when a shared resource is a
 - [consider this example ](readmaterialfromudemy/data-races-example/src/Main.java)
     - In the above example `x++` and `y++` are not dependent on each other both can be executed in any manner as after the method call end result will be `x==y` (This is the expected behavior)
     - But in multithreaded environment there might be situation where another thread is running on the cpu on another core and reading the same variables and relies on the particular order of their execution as a result me may see broken behavior where y>x which should never be the case, this is called `Data Race`.
+
+## Locking Strategies and Deadlocks
+
+Deadlocks: Is kind of circular dependency where one thread A is dependent of another Thread B to release the lock held on resource that A needs while A has locked a resource that B needs to progress
+
+For more fine grained locked we created multiple objects for getting locks on the shared resource but this may lead to deadlock
+
+**Condition for deadlock**
+
+Mutual exclusion: Only one thread can have exclusion access to a shared resource
+Hold and wait: At least one thread is holding a resource and waiting for another resource
+No preemption: A resource is released only after the thread is done using it
+Circular wait: A chain of at least two threads each one is holding a resource and waiting for another resource
+
+**If any of this conditions is met then deadlock is eminent and it is only matter of time**
+Solution: 
+- Make sure at least one of the condition from above is avoided
+- Avoiding Circular wait is easy and best approach, in order to do this we **specify strict order in which the lock can be acquired on resource**.
+- [This leads to dead lock](readmaterialfromudemy/deadlocks-example/src/Main.java) to fix this give fix order for the lock acquiring [as shown here](readmaterialfromudemy/deadlocks-example/src/CircularDeadlockFix.java)
+
 
 **Udemy course reference**
 Java Multithreading, Concurrency & Performance Optimization by Michael Pogrebinsky
