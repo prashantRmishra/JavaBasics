@@ -16,6 +16,8 @@
     - [Race Condition solution](#race-condition-solution)
   - [Data race](#data-race)
   - [Locking Strategies and Deadlocks](#locking-strategies-and-deadlocks)
+  - [ReentrantLock](#reentrantlock)
+  - [ReentrantReadWriteLock](#reentrantreadwritelock)
 
 
 
@@ -259,7 +261,7 @@ But the application would still be running, so we need to interrupt the thread t
 ## Stack and Heap
 
 ![stackandheap
-](image.png)
+](./images/image.png)
 Every **variable**,**object**, **object reference** declared at the **class level** are stored in the **heap** and is shared among the thread,
 Every **variable**, **object reference** declared inside a **method** is present on the thread **stack** (which is separate for each thread) if two or more threads are executing the same method then they all will
 have different versions of the variables present in the method, Hence synchronization is required.
@@ -268,7 +270,7 @@ have different versions of the variables present in the method, Hence synchroniz
 
 ## Resource sharing between threads
 *Example 1*
-![shared resource](image-2.png)
+![shared resource](./images/image-2.png)
 *Example 2*
 Another example would be **consumer threads** consuming from same(**shared**) queue like kafka
 
@@ -280,7 +282,7 @@ How to insure the **atomic operation** of the shared resource ?: By making sure 
 
 ## Critical section
 
-![critialsection](image-3.png)
+![critialsection](./images/image-3.png)
 
 How to achieve the exclusive access of the Critical section? ***Using Synchronization***
 
@@ -382,6 +384,68 @@ Solution:
 - Make sure at least one of the condition from above is avoided
 - Avoiding Circular wait is easy and best approach, in order to do this we **specify strict order in which the lock can be acquired on resource**.
 - [This leads to dead lock](readmaterialfromudemy/deadlocks-example/src/Main.java) to fix this give fix order for the lock acquiring [as shown here](readmaterialfromudemy/deadlocks-example/src/CircularDeadlockFix.java)
+
+## ReentrantLock
+
+- Same functionality as the synchronized lock
+- Provides more advance control and feature
+  - query methods for testing lock internal state
+  - lockInterruptibly()
+  - tryLock()
+
+What is the difference between Using the `lock()` and `tryLock()` method
+```java
+ReentrantLock lock = new ReentrantLock();
+public void method(){
+    lock.lock();
+    try{
+        //critical section
+        //critical section end
+    }finally{
+        lock.unlock();
+    }
+}
+```
+In above example where we are using `lock()` method, if a Thread has already acquired the lock, if another thread tried to acquire the lock then that thread will be suspended until the lock is released by previous thread which is not ideal in some use cases 
+
+This disadvantage is overcome by `tryLock()` method
+```java
+ReentrantLock lock = new ReentrantLock();
+public void method(){
+    if(lock.tryLock()){
+        try{
+            //critical section
+            //critical section end
+        }finally{
+            lock.unlock();
+        }
+    }
+    else{
+        ...
+    }
+}
+```
+In the above example `tryLock()` check if the lock can be acquired  by a ThreadA, if yes then ThreadA get the lock and executes the critical section, but if the lock is already acquired by another ThreadB then ThreadA won't be suspended rather it will simple go to else part and execute some other code.
+
+This way we make the program more snappy and working without having some threads begin suspended indefinitely.
+
+**Using tryLock()**
+- We avoid blocking the real time Thread
+- Kept application responsive
+- Performed operations atomically
+
+## ReentrantReadWriteLock
+- Using regular binary locks(ReentrantLock) with read intensive workload prevents concurrent reads from shared resource 
+- ReentrantReadWriteLock
+  - ReadLock
+  - WriteLock
+  - Allows multiple readers, read shared resources concurrently 
+- [Refer to this example where the performance(latency) is increased by 3 times](readmaterialfromudemy/read-write-lock-example/src/Main.java)
+- ReentrantReadWriteLock is not always better than the conventional lock
+  - User the right tool for the job
+  - Measure and validate the assumptions
+
+
 
 
 **Udemy course reference**
