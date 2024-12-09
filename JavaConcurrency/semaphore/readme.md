@@ -6,7 +6,7 @@ The following task is performed by multiple threads concurrently:
 
 ```java
 private void task() throws InterruptedException {
- 
+
   // Performing Part 1
   System.out.println(Thread.currentThread().getName() 
     + " part 1 of the work is finished");
