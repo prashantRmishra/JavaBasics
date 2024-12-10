@@ -19,6 +19,7 @@
   - [ReentrantLock](#reentrantlock)
   - [ReentrantReadWriteLock](#reentrantreadwritelock)
   - [Semaphore](#semaphore)
+  - [AtomicReference](#atomicreference)
 
 
 
@@ -453,6 +454,13 @@ This way we make the program more snappy and working without having some threads
   - Any thread can release a semaphore(no ownership)
 - Inter-thread communication for producer consumer using semaphore
 - [Read this example of empty semaphore](semaphore/readme.md)
+
+## AtomicReference<T>
+- Wraps a reference to an object, and allows us to do atomic operation on that reference including the compare and set
+- compareAndSet(): atomic operation is available with all the atomic classes
+- This is very useful in cases where the value of the reference variable is changed by a lot of thread and we want to make sure that the references are updated in correct way even when being accessed by multiple threads
+- [Refer this example where Stack is implemented using LinkedList and multiple threads are doing push and pop on the stack(both the approaches have been discussed i.e Using lock(synchronized) as well as lock fee approach using AtomicReference<t>)](readmaterialfromudemy/atomic-reference-example/src/Main.java)
+
 
 
 **Udemy course reference**
