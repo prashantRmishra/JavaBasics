@@ -20,6 +20,7 @@
   - [ReentrantReadWriteLock](#reentrantreadwritelock)
   - [Semaphore](#semaphore)
   - [AtomicReference](#atomicreference)
+  - [Virtual thread](#virtual-thread)
 
 
 
@@ -461,7 +462,21 @@ This way we make the program more snappy and working without having some threads
 - This is very useful in cases where the value of the reference variable is changed by a lot of thread and we want to make sure that the references are updated in correct way even when being accessed by multiple threads
 - [Refer this example where Stack is implemented using LinkedList and multiple threads are doing push and pop on the stack(both the approaches have been discussed i.e Using lock(synchronized) as well as lock fee approach using AtomicReference<t>)](readmaterialfromudemy/atomic-reference-example/src/Main.java)
 
-
+## Virtual thread
+- Normally when we create a thread using Thread class, this thread is nothing but a wrapper of the OS thread, hence a Thread has one to one mapping with the os thread
+- When ever a new thread is created the jvm allocates fixed stack space for the local variables of that thread, these Threads are also called as Platform thread which is very expensive as it is mapped with one to one with os thread (which is a limited resource ) and is tied to static stack space within the jvm
+- Virtual thread are new type of Threads that are introduced as part of JDK21
+  - Just like the platform threads Virtual threads also have run(){..} and start() method
+  - It is fully managed and belongs to JVM and does not come with fixed size stack space, os is not aware of it.
+  - It is just like any other java object and is stored on Heap and can be reclaimed by JVMs garbage collector when it is no longer needed, hence they are cheap to create in large quantities
+  - How do they run on cpu ?
+    - When we create at least one Virtual thread, JVM under the hood creates a relatively smaller pool of `Platform` threads
+    - Whenever JVM wants to run a `Virtual` thread(say ThreadA) it mount that thread on the Platform thread within its pool, whenever a virtual thread is mounted on the platform thread, the platform thread is called `Carrier` Thread
+    - When the Virtual thread finishes its execution, the JVM unmounts that thread from the Carrier and make that platform thread available for other Virtual threads, unmounted virtual thread becomes garbage and garbage collector can clean up at any time 
+    - In certain situation when the virtual thread(say ThreadA) mounted on Platform thread(Carrier) does not make any progress, JVM will unmount it but save its current state on the heap (the state  instruction pointer(IP) and the snapshot of the Carrier Thread stack), then the Carrier Thread again become the platform thread and the JVM can mount different Virtual thread(say ThreadB), later when the ThreadA is able to continue, if another platform thread is available and does not carry any virtual thread then the ThreadA can be mounted on it else ThreadA will just have to wait un till a Platform thread become available
+    - We as developers have very little control over the Carrier thread and scheduling of Virtual threads on them, it is something JVM does under the hood for us.
+    - Virtual threads are daemon threads(it will not prevent our main thread from executing)
+    - Setting priority of Virtual threads have no effect(they always have default priority)
 
 **Udemy course reference**
 Java Multithreading, Concurrency & Performance Optimization by Michael Pogrebinsky
