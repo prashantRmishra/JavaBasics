@@ -24,11 +24,15 @@ public class IoBoundApplication {
     }
 
     private static void performTasks() {
-        try (ExecutorService executorService = Executors.newCachedThreadPool()) {
-
+        ExecutorService executorService = null;
+        try  {
+            executorService = Executors.newCachedThreadPool();
             for (int i = 0; i < NUMBER_OF_TASKS; i++) {
                 executorService.submit(() ->  blockingIoOperation());
             }
+        }
+        finally{
+            executorService.shutdown();
         }
     }
 
