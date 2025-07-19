@@ -6,3 +6,6 @@ Solution:
 We can use **WeakHashMap**, explicity **remove the objects** from the collection when they are no longer being used or we can think of using good cache (collections) **eviction policy** with fixed size, this will insure that we delete the objects when the size is full and new objects are to be added.
 
 We detected such issues using tools like VisualVM, Eclipse MAT, or by analyzing heap dumps. In one of my projects, improper caching using a HashMap caused retention of large objects, which we resolved by using WeakHashMap.”
+
+You can also add:
+In production, we proactively monitor GC pauses, Metaspace usage, and thread-level metrics using APM tools like Dynatrace or New Relic to avoid runtime issues.
