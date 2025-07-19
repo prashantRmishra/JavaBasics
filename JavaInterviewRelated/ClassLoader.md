@@ -1,6 +1,4 @@
-Absolutely, Prashant. Since this was the one question you skipped earlier, let me now explain **Class Loaders in Java** in a way that’s interview-ready and backend-engineer focused.
 
----
 
 ### 🧠 **What is a ClassLoader in Java?**
 
