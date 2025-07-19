@@ -9,3 +9,5 @@ We detected such issues using tools like VisualVM, Eclipse MAT, or by analyzing 
 
 You can also add:
 In production, we proactively monitor GC pauses, Metaspace usage, and thread-level metrics using APM tools like Dynatrace or New Relic to avoid runtime issues.
+
+[How to analyze heap dump for memory leaks ?](https://github.com/prashantRmishra/JavaBasics/blob/main/JavaInterviewRelated/AnalyzeHeapDump.md)

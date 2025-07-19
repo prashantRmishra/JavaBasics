@@ -12,3 +12,5 @@ In one situation, a high rate of dynamic class loading led to Metaspace exhausti
 
 You can also add:
 In production, we proactively monitor GC pauses, Metaspace usage, and thread-level metrics using APM tools like Dynatrace or New Relic to avoid runtime issues.
+
+[How to analyze heap dump for memory leaks or OutoFMemoryError ?](https://github.com/prashantRmishra/JavaBasics/blob/main/JavaInterviewRelated/AnalyzeHeapDump.md)

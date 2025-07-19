@@ -37,3 +37,5 @@ G1 GC (splits heap into regions, aims for low pause times),
 ZGC or Shenandoah (for very large heaps with minimal pause times).
 
 In production, we monitor GC performance using GC logs and APM tools to tune JVM parameters like -Xms, -Xmx, and GC-specific flags.
+
+[How to analyze heap dump for memory leaks or OutoFMemoryError ?](https://github.com/prashantRmishra/JavaBasics/blob/main/JavaInterviewRelated/AnalyzeHeapDump.md)
