@@ -2,6 +2,7 @@ A custom blocking queue in Java is useful when you want to control the producer-
 
 Here’s a simple, efficient example of a custom blocking queue using ReentrantLock and Condition from java.util.concurrent.locks.
 
+```java
 import java.util.*;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -104,3 +105,4 @@ consumed data-8
 consumed data-9
 consumed data-10
 */
+```
